@@ -57,6 +57,38 @@ How to Run:
         1. prog1 purposely has a variable not defined in order to catch the error in the Semantic Analyzer
 
         2. prog2 purposely has a type mismatch error in order to catch the error in the Semantic Analyzer
+        
+        
+
+Grammar for the parser:
+stmt_list           =   {stmt} ;
+ 
+    stmt                =   ';'
+                          | Identifier '=' expr ';'
+                          | 'while' paren_expr stmt
+                          | 'if' paren_expr stmt ['else' stmt]
+                          | 'print' '(' prt_list ')' ';'
+                          | 'putc' paren_expr ';'
+                          | '{' stmt_list '}'
+                          | 'int' identifier ';'
+                          ;
+ 
+    paren_expr          =   '(' expr ')' ;
+ 
+    prt_list            =   (string | expr) {',' (String | expr)} ;
+ 
+    expr                =   and_expr            {'||' and_expr} ;
+    and_expr            =   equality_expr       {'&&' equality_expr} ;
+    equality_expr       =   relational_expr     [('==' | '!=') relational_expr] ;
+    relational_expr     =   addition_expr       [('<' | '<=' | '>' | '>=') addition_expr] ;
+    addition_expr       =   multiplication_expr {('+' | '-') multiplication_expr} ;
+    multiplication_expr =   primary             {('*' | '/' | '%') primary } ;
+    primary             =   Identifier
+                          | Integer
+                          | '(' expr ')'
+                          | ('+' | '-' | '!') primary
+                          ;
+
 
 
 Link to github repository: https://github.com/vibharaj/cpsc323project
