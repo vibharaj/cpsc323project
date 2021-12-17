@@ -1,4 +1,4 @@
-# parser
+# lexical analyzer, parser, and semantic analyzer
 
 CPSC 323 Programming Project 2 - Parser in C
 
