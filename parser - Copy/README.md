@@ -24,15 +24,15 @@ How to Run:
 
     1. Open up three command prompts; one for lexical analyzer, one for parser, and one for the semantic analyzer
 
-    2. Before running, make sure to build the Lex.sln in the lexicalAnalyzer folder, and parser.sln 
+    2. Before running, make sure to build the Lex.sln in the lexicalAnalyzer folder, parser.sln, and Semantic Analyzer.sln 
     in the parser folder to generate the executable files
 
-    3. In first command prompt, once in parser directory:
+    3. In first command prompt, once in parser - Copy directory:
         a. cd lexicalAnalyzer/Debug
         b. lexicalAnalyzer prog1.t lexOutput.txt
            (lexicalAnalyzer existingTestFile.t fileToBeCreated.txt)
 
-    4. After the above line has ran, copy the lexOutput.txt file into the parser/x64/Debug folder in the parser 
+    4. After the above line has ran, copy the lexOutput.txt file into the parser/x64/Debug folder in the parser - Copy 
     folder
 
     5. In second command prompt, once in parser directory:
