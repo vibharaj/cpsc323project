@@ -1,0 +1,17 @@
+Sequence       
+Sequence       
+;
+Assign         
+Identifier     count
+Integer        1
+If             
+Equal          
+Identifier     count
+Integer        1
+If             
+Sequence       
+;
+Assign         
+Identifier     count
+Integer        10
+;

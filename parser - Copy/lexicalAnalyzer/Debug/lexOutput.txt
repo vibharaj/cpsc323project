@@ -1,0 +1,17 @@
+    4      1 Identifier      count
+    4      7 Op_assign      
+    4      9 Integer             1
+    4     10 Semicolon      
+    5      1 Keyword_if     
+    5      3 LeftParen      
+    5      4 Identifier      count
+    5     10 Op_equal       
+    5     13 Integer             1
+    5     14 RightParen     
+    5     15 LeftBrace      
+    6      5 Identifier      count
+    6     11 Op_assign      
+    6     13 Integer            10
+    6     15 Semicolon      
+    7      1 RightBrace     
+    7      2 End_of_input   

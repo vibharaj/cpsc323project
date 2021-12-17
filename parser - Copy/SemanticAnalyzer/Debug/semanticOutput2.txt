@@ -1,0 +1,2 @@
+error: Type Mismatch. LHS variable count is not of type string
+

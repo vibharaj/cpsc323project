@@ -1,0 +1,24 @@
+    4      1 Keyword_int
+    4      5 Identifier      count
+    4     10 Semicolon      
+    5      1 Identifier      count
+    5      7 Op_assign      
+    5      9 Integer             1
+    5     10 Semicolon      
+    6      1 Identifier      count
+    6      7 Op_assign      
+    6      9 String          "a"
+    6     12 Semicolon      
+    8      1 Keyword_if     
+    8      3 LeftParen      
+    8      4 Identifier      count
+    8     10 Op_equal       
+    8     13 Integer             1
+    8     14 RightParen     
+    8     15 LeftBrace      
+    9      5 Identifier      count
+    9     11 Op_assign      
+    9     13 Integer            10
+    9     15 Semicolon      
+   10      1 RightBrace     
+   10      2 End_of_input   

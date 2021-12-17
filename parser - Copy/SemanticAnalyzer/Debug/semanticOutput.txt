@@ -1,0 +1,2 @@
+error: Variable count is not defined.
+

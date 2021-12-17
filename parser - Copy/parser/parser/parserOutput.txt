@@ -1,0 +1,2 @@
+(0, 0) error: Can't open lexOutput.txt
+

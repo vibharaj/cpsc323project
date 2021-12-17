@@ -1,0 +1,25 @@
+Sequence       
+Sequence       
+Sequence       
+Sequence       
+;
+int            
+Identifier     count
+;
+Assign         
+Identifier     count
+Integer        1
+Assign         
+Identifier     count
+String         "a"
+If             
+Equal          
+Identifier     count
+Integer        1
+If             
+Sequence       
+;
+Assign         
+Identifier     count
+Integer        10
+;
