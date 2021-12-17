@@ -8,12 +8,14 @@
 
 typedef unsigned char uchar;
 
+// classifiers 
 typedef enum {
     nd_Ident, nd_String, nd_Integer, nd_Sequence, nd_If, nd_Prtc, nd_Prts, nd_Prti, nd_While,
     nd_Assign, nd_Negate, nd_Not, nd_Mul, nd_Div, nd_Mod, nd_Add, nd_Sub, nd_Lss, nd_Leq,
     nd_Gtr, nd_Geq, nd_Eql, nd_Neq, nd_And, nd_Or, nd_Decl, nd_null
 } NodeType;
 
+// operators
 typedef enum {
     FETCH, STORE, PUSH, ADD, SUB, MUL, DIV, MOD, LT, GT, LE, GE, EQ, NE, AND,
     OR, NEG, NOT, JMP, JZ, PRTC, PRTS, PRTI, HALT
@@ -21,6 +23,7 @@ typedef enum {
 
 typedef uchar code;
 
+// tree structure 
 typedef struct Tree {
     NodeType node_type;
     struct Tree* left;
@@ -28,10 +31,11 @@ typedef struct Tree {
     char* value;
 } Tree;
 
+// definition of symbol table
 typedef struct sym {
     char symbol[255];
     NodeType sym_type;
-}SymbolRecord;
+} SymbolRecord;
 
 #define da_dim(name, type)  type *name = NULL;          \
                             int _qy_ ## name ## _p = 0;  \
@@ -54,7 +58,7 @@ da_dim(object, code);
 da_dim(globals, const char*);
 da_dim(string_pool, const char*);
 
-// dependency: Ordered by NodeType, must remain in same order as NodeType enum
+// NodeType, enum
 struct {
     char* enum_text;
     NodeType   node_type;
@@ -88,33 +92,39 @@ struct {
     {"int"         , nd_Decl,     -1 }
 };
 
-void error(const char* fmt, ...) {
+// error function
+void error(const char* f, ...) {
     va_list ap;
     char buf[1000];
 
-    va_start(ap, fmt);
-    vsprintf(buf, fmt, ap);
+    va_start(ap, f);
+    vsprintf(buf, f, ap);
     va_end(ap);
     printf("error: %s\n", buf);
     exit(1);
 }
 
-Code_t type_to_op(NodeType type) {
-    return atr[type].opcode;
+// type to operator
+Code_t type_to_op(NodeType Ntype) {
+    return atr[Ntype].opcode;
 }
 
-Tree* make_node(NodeType node_type, Tree* left, Tree* right) {
+// node generator function
+Tree* make_node(NodeType node_type, Tree* l, Tree* r) {
     Tree* t = calloc(sizeof(Tree), 1);
     t->node_type = node_type;
-    t->left = left;
-    t->right = right;
+
+    // assign l and r to left and right
+    t->left = l;
+    t->right = r;
     return t;
 }
 
-Tree* make_leaf(NodeType node_type, char* value) {
+// leaf generator function
+Tree* make_leaf(NodeType node_type, char* val) {
     Tree* t = calloc(sizeof(Tree), 1);
     t->node_type = node_type;
-    t->value = strdup(value);
+    t->value = strdup(val);
     return t;
 }
 
@@ -129,6 +139,7 @@ void fix(int src, int dst) {
 
 int fetch_var_offset(const char* id) {
     for (int i = 0; i < da_len(globals); ++i) {
+        // comparing id and globals
         if (strcmp(id, globals[i]) == 0)
             return i;
     }
@@ -138,17 +149,18 @@ int fetch_var_offset(const char* id) {
     return n;
 }
 
-int symbol_lookup(const char* id, NodeType type) {
+// looking up symbol in symbol table
+int symbol_lookup(const char* id, NodeType t) {
     int i;
     for (i = 0; i < MAX_SYMBOL_TABLE_SIZE; ++i) {
         if (strcmp(symTable[i].symbol, "") == 0) {
             strcpy(symTable[i].symbol, id);
-            symTable[i].sym_type = type;
+            symTable[i].sym_type = t;
             break;
         }
         else {
             if (strcmp(symTable[i].symbol, id) == 0) {
-                if (symTable[i].sym_type == type) {
+                if (symTable[i].sym_type == t) {
                     break;
                 }
                 else {
@@ -162,9 +174,10 @@ int symbol_lookup(const char* id, NodeType type) {
    
 }
 
-int MatchTypeFromSymbolTable(const char* id, NodeType type) {
+// match type from symbol table
+int MatchTypeFromSymbolTable(const char* id, NodeType t) {
     int i;
-    int found = -1;
+    int sym_found = -1;
 
     for (i = 0; i < MAX_SYMBOL_TABLE_SIZE; ++i) {
         if (strcmp(symTable[i].symbol, "") == 0) {
@@ -172,25 +185,26 @@ int MatchTypeFromSymbolTable(const char* id, NodeType type) {
         }
         else {
             if (strcmp(symTable[i].symbol, id) == 0) {
-                if (symTable[i].sym_type == type) {
-                    found = i;
+                if (symTable[i].sym_type == t) {
+                    sym_found = i;
                 }
                 break;
             }
         }
 
     }
-    return found;
+    return sym_found;
 
 }
 
-int AddToSymbolTable(const char* id, NodeType type) {
+// add type to symbol table
+int AddToSymbolTable(const char* id, NodeType t) {
     int i;
 
     for (i = 0; i < MAX_SYMBOL_TABLE_SIZE; ++i) {
         if (strcmp(symTable[i].symbol, "") == 0) {
             strcpy(symTable[i].symbol, id);
-            symTable[i].sym_type = type;
+            symTable[i].sym_type = t;
             break;
         }
     }
@@ -199,14 +213,15 @@ int AddToSymbolTable(const char* id, NodeType type) {
 
 }
 
+// checks if id is in symbol table
 int IsInSymbolTable(const char* id) {
     int i;
-    int found = -1;
+    int sym_found = -1;
 
     for (i = 0; i < MAX_SYMBOL_TABLE_SIZE; ++i) {
         if (strcmp(symTable[i].symbol, "") != 0) {
             if (strcmp(symTable[i].symbol, id) == 0) {
-                found = i;
+                sym_found = i;
                 break;
             }
         }
@@ -214,30 +229,35 @@ int IsInSymbolTable(const char* id) {
             break;
         }
     }
-    return found;
+    return sym_found;
 
 }
 
-int fetch_string_offset(const char* st) {
+// getting string offset
+int fetch_string_offset(const char* s) {
     for (int i = 0; i < da_len(string_pool); ++i) {
-        if (strcmp(st, string_pool[i]) == 0)
+        if (strcmp(s, string_pool[i]) == 0)
             return i;
     }
     da_add(string_pool);
+    // n is the length of string offset
     int n = da_len(string_pool) - 1;
-    string_pool[n] = strdup(st);
+    string_pool[n] = strdup(s);
     return n;
 }
 
+// traverse tree
 void tree_walk (Tree* x) {
     int p1, p2, n;
     char* pstr = NULL;
 
     if (x == NULL) return;
     switch (x->node_type) {
+    // declaration
     case nd_Decl:
         n = AddToSymbolTable(x->left->value, nd_Integer);
         break;
+    // identifier
     case nd_Ident:
         n = IsInSymbolTable(x->value);
         if (n < 0)
@@ -245,11 +265,14 @@ void tree_walk (Tree* x) {
             error("Variable %s is not defined.\n", x->value);
         }
         break;
+    // integer
     case nd_Integer:
         break;
+    // string
     case nd_String:
         n = fetch_string_offset(x->value);
         break;
+    // assignment
     case nd_Assign:
         n = IsInSymbolTable(x->left->value);
         if (n < 0)
@@ -273,10 +296,11 @@ void tree_walk (Tree* x) {
         }
         tree_walk(x->right);
         break;
+    // if
     case nd_If:
-        tree_walk(x->left);        // if expr
-        p1 = hole();                    // make room for jump dest
-        tree_walk(x->right->left);   // if true statements
+        tree_walk(x->left);
+        p1 = hole();
+        tree_walk(x->right->left);
         if (x->right->right != NULL) {
             p2 = hole();
         }
@@ -286,14 +310,16 @@ void tree_walk (Tree* x) {
             fix(p2, here);
         }
         break;
+    // while
     case nd_While:
         p1 = here;
-        tree_walk(x->left);        // while expr
-        p2 = hole();                    // make room for jump dest
-        tree_walk(x->right);       // statements
-        fix(hole(), p1);                // plug the top
-        fix(p2, here);                  // plug the 'if false, jump'
+        tree_walk(x->left);
+        p2 = hole();
+        tree_walk(x->right);
+        fix(hole(), p1);
+        fix(p2, here);
         break;
+    // sequence
     case nd_Sequence:
         tree_walk(x->left);
         tree_walk(x->right);
@@ -307,12 +333,14 @@ void tree_walk (Tree* x) {
     case nd_Prts:
         tree_walk(x->left);
         break;
+    // other cases
     case nd_Lss: case nd_Gtr: case nd_Leq: case nd_Geq: case nd_Eql: case nd_Neq:
     case nd_And: case nd_Or: case nd_Sub: case nd_Add: case nd_Div: case nd_Mul:
     case nd_Mod:
         tree_walk(x->left);
         tree_walk(x->right);
         break;
+    // negation
     case nd_Negate: case nd_Not:
         tree_walk(x->left);
         break;
@@ -321,7 +349,7 @@ void tree_walk (Tree* x) {
     }
 }
 
-
+// if unable to open file
 void init_io(FILE** fp, FILE* std, const char mode[], const char fn[]) {
     if (fn[0] == '\0')
         *fp = std;
@@ -336,6 +364,7 @@ void init_symbol_table() {
     }
 }
 
+// getting enum val
 NodeType get_enum_value(const char name[]) {
     for (size_t i = 0; i < sizeof(atr) / sizeof(atr[0]); i++) {
         if (strcmp(atr[i].enum_text, name) == 0) {
@@ -346,41 +375,44 @@ NodeType get_enum_value(const char name[]) {
     return -1;
 }
 
-char* read_line(int* len) {
+// read line
+char* read_line(int* l) {
     static char* text = NULL;
-    static int textmax = 0;
+    static int text_max = 0;
 
-    for (*len = 0; ; (*len)++) {
+    for (*l = 0; ; (*l)++) {
         int ch = fgetc(source_fp);
         if (ch == EOF || ch == '\n') {
-            if (*len == 0)
+            if (*l == 0)
                 return NULL;
             break;
         }
-        if (*len + 1 >= textmax) {
-            textmax = (textmax == 0 ? 128 : textmax * 2);
-            text = realloc(text, textmax);
+        if (*l + 1 >= text_max) {
+            text_max = (text_max == 0 ? 128 : text_max * 2);
+            text = realloc(text, text_max);
         }
-        text[*len] = ch;
+        text[*l] = ch;
     }
-    text[*len] = '\0';
+    text[*l] = '\0';
     return text;
 }
 
-char* rtrim(char* text, int* len) {         // remove trailing spaces
-    for (; *len > 0 && isspace(text[*len - 1]); --(*len))
+//removes trailing spaces
+char* rtrim(char* text, int* l) {
+    for (; *l > 0 && isspace(text[*l - 1]); --(*l))
         ;
 
-    text[*len] = '\0';
+    text[*l] = '\0';
     return text;
 }
 
+// load abstract syntax tree
 Tree* load_ast() {
-    int len;
-    char* yytext = read_line(&len);
-    yytext = rtrim(yytext, &len);
+    int l;
+    char* yytext = read_line(&l);
+    yytext = rtrim(yytext, &l);
 
-    // get first token
+    // getting first token
     char* tok = strtok(yytext, " ");
 
     if (tok[0] == ';') {
@@ -388,9 +420,9 @@ Tree* load_ast() {
     }
     NodeType node_type = get_enum_value(tok);
 
-    // if there is extra data, get it
+    // get extra data
     char* p = tok + strlen(tok);
-    if (p != &yytext[len]) {
+    if (p != &yytext[l]) {
         for (++p; isspace(*p); ++p)
             ;
         return make_leaf(node_type, p);
@@ -401,6 +433,7 @@ Tree* load_ast() {
     return make_node(node_type, left, right);
 }
 
+// main function
 int main(int argc, char* argv[]) {
     init_io(&source_fp, stdin, "r", argc > 1 ? argv[1] : "");
     init_io(&dest_fp, stdout, "wb", argc > 2 ? argv[2] : "");
